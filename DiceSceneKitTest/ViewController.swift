@@ -53,7 +53,7 @@ class ViewController: UIViewController {
     
     func createDiceNode() -> SCNNode {
         let diceNode = SCNNode()
-       
+        
         let diceGeometry = SCNBox(width: 0.7, height: 0.7, length: 0.7, chamferRadius: 0.15)
         
         let material1 = SCNMaterial()
@@ -95,7 +95,7 @@ class ViewController: UIViewController {
                 dicePhysicsBody.mass = 0.1 // 根据需要调整这个值
                 dicePhysicsBody.restitution = 0.01 // 降低反弹能量
                 dicePhysicsBody.friction = 0.7 // 增加摩擦力
-
+                
                 diceNode.physicsBody = dicePhysicsBody
                 
                 // 添加力和扭矩
@@ -120,8 +120,8 @@ class ViewController: UIViewController {
                 // 创建骰子聚集的动作
                 let moveToGatheringPointAction = SCNAction.move(to: gatheringPoint, duration: 0.2)
                 
-//                // 稍微等待一下
-//                let waitAction = SCNAction.wait(duration: 0.2)
+                //                // 稍微等待一下
+                //                let waitAction = SCNAction.wait(duration: 0.2)
                 
                 var rotationActions: [SCNAction] = []
                 // 添加3次乱数不同角度的旋转事件 存进Array
@@ -155,13 +155,13 @@ class ViewController: UIViewController {
                 // 执行全部的动作
                 let sequenceAction = SCNAction.sequence(allActions)
                 diceNode.runAction(sequenceAction)
-
-               
-               
+                
+                
+                
             }
         }
     }
-
+    
     
     ///SCNVector3(0, 0, 0) 1
     ///SCNVector3(0, -CGFloat.pi / 2, 0) 2
@@ -183,27 +183,23 @@ class ViewController: UIViewController {
     }
     
     func createBoundingBox() -> SCNNode {
-        let boxGeometry = SCNBox(width: 3, height: 3.0, length: 10.0, chamferRadius: 0)
+        let boxGeometry = SCNBox(width: 3, height: 3, length: 5, chamferRadius: 0)
         let boxNode = SCNNode(geometry: boxGeometry)
         
         // 使几何体看起来是透明的
         let transparentMaterial = SCNMaterial()
         transparentMaterial.diffuse.contents = UIColor.clear
+        //        transparentMaterial.diffuse.contents = UIColor.yellow
         boxGeometry.materials = [transparentMaterial, transparentMaterial, transparentMaterial, transparentMaterial, transparentMaterial, transparentMaterial]
         
-        // 添加物理体
-        let boxPhysicsBody = SCNPhysicsBody(type: .static, shape: SCNPhysicsShape(geometry: boxNode.geometry!, options: nil))
-        // 调整物理体的质量和弹性
-        boxPhysicsBody.mass = 0.5 // 根据需要调整这个值
-        boxPhysicsBody.restitution = 0.1 // 降低反弹能量
-        boxPhysicsBody.friction = 0.7 // 增加摩擦力
-        boxNode.physicsBody = boxPhysicsBody
-        
+        // 添加物理体範圍
+        let physicsShape = SCNPhysicsShape(geometry: boxGeometry, options: [SCNPhysicsShape.Option.type: SCNPhysicsShape.ShapeType.concavePolyhedron])
+        boxNode.physicsBody = SCNPhysicsBody(type: .static, shape: physicsShape)
         
         
         return boxNode
     }
-
+    
     
 }
 
