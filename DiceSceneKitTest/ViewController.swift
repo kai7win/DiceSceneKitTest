@@ -9,7 +9,7 @@ import UIKit
 import SceneKit
 
 class ViewController: UIViewController {
-
+    
     var diceNodes: [[SCNNode]] = []
     var preSetRollResults: [Int] = [1, 2, 3, 4, 5, 6]
     
@@ -24,14 +24,15 @@ class ViewController: UIViewController {
         
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 10)
+        cameraNode.position = SCNVector3(x: 0, y: -1.5, z: 12)
         scene.rootNode.addChildNode(cameraNode)
         
         for i in 0...1 {
             var row: [SCNNode] = []
             for j in -1...1 {
                 let diceNode = createDiceNode()
-                diceNode.position = SCNVector3(j, i, 0)
+                ///这边Y轴加 - 号 是因为在SceneKit的踩笛卡尔坐标 Y是往上 跟屏幕坐标相反
+                diceNode.position = SCNVector3(j, -i + 1, 0)
                 scene.rootNode.addChildNode(diceNode)
                 row.append(diceNode)
             }
@@ -67,7 +68,7 @@ class ViewController: UIViewController {
         let material6 = SCNMaterial()
         material6.diffuse.contents = UIImage(named: "dice6")
         
-        diceGeometry.materials = [material1, material2, material3, material4, material5, material6]
+        diceGeometry.materials = [material1, material2, material6, material5, material3, material4]
         diceNode.geometry = diceGeometry
         return diceNode
     }
@@ -75,46 +76,56 @@ class ViewController: UIViewController {
     @objc func rollDice() {
         for (rowIndex, diceRow) in diceNodes.enumerated() {
             for (colIndex, diceNode) in diceRow.enumerated() {
-                // Create an array to store multiple rotation actions
+                // 旋转事件的Array
                 var rotationActions: [SCNAction] = []
                 
-                // Add multiple rotation actions to the array
+                // 添加5次乱数不同角度的旋转事件 存进Array
                 for _ in 1...5 {
                     let rotationAction = SCNAction.rotateBy(
                         x: CGFloat.random(in: 0...CGFloat.pi * 2),
                         y: CGFloat.random(in: 0...CGFloat.pi * 2),
                         z: CGFloat.random(in: 0...CGFloat.pi * 2),
-                        duration: 0.2
+                        duration: 0.5
                     )
                     rotationActions.append(rotationAction)
                 }
-
-                // Calculate the index in the preset roll results array
+                
+                // 计算每个骰子的结果Index取出完成骰子需对应的点数
                 let resultIndex = rowIndex * diceRow.count + colIndex
                 let diceFace = self.preSetRollResults[resultIndex % preSetRollResults.count]
+                
+                
                 let completionAction = SCNAction.run { _ in
                     diceNode.eulerAngles = self.rotationForDiceFace(diceFace)
                 }
                 
-                // Append the completion action to the array
+                // 添加完成的旋转事件
                 rotationActions.append(completionAction)
                 
+                // 执行旋转的动作
                 let sequenceAction = SCNAction.sequence(rotationActions)
                 diceNode.runAction(sequenceAction)
             }
         }
     }
-
+    
+    ///SCNVector3(0, 0, 0) 1
+    ///SCNVector3(0, -CGFloat.pi / 2, 0) 2
+    ///SCNVector3(CGFloat.pi / 2, 0, 0) 3
+    ///SCNVector3(-CGFloat.pi / 2, 0, 0) 4
+    ///SCNVector3(0, CGFloat.pi / 2, 0) 5
+    ///SCNVector3(CGFloat.pi, 0, 0) 6
+    
     
     func rotationForDiceFace(_ face: Int) -> SCNVector3 {
         switch face {
         case 1: return SCNVector3(0, 0, 0)
         case 2: return SCNVector3(0, -CGFloat.pi / 2, 0)
-        case 3: return SCNVector3(-CGFloat.pi / 2, 0, 0)
-        case 4: return SCNVector3(CGFloat.pi / 2, 0, 0)
+        case 3: return SCNVector3(CGFloat.pi / 2, 0, 0)
+        case 4: return SCNVector3(-CGFloat.pi / 2, 0, 0)
         case 5: return SCNVector3(0, CGFloat.pi / 2, 0)
         case 6: return SCNVector3(CGFloat.pi, 0, 0)
-        default: return SCNVector3(0, 0, 0)
+        default: return SCNVector3(CGFloat.pi, 0, 0)
         }
     }
 }
