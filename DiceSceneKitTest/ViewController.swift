@@ -31,7 +31,7 @@ class ViewController: UIViewController {
             var row: [SCNNode] = []
             for j in -1...1 {
                 let diceNode = createDiceNode()
-                ///这边Y轴加 - 号 是因为在SceneKit的踩笛卡尔坐标 Y是往上 跟屏幕坐标相反
+                ///这边Y轴加 负号 是因为在SceneKit的踩笛卡尔坐标 Y是往上 跟屏幕坐标相反
                 diceNode.position = SCNVector3(j, -i + 1, 0)
                 scene.rootNode.addChildNode(diceNode)
                 row.append(diceNode)
@@ -51,22 +51,22 @@ class ViewController: UIViewController {
         let diceGeometry = SCNBox(width: 0.7, height: 0.7, length: 0.7, chamferRadius: 0.15)
         
         let material1 = SCNMaterial()
-        material1.diffuse.contents = UIImage(named: "dice1")
+        material1.diffuse.contents = UIImage(named: "redDice1")
         
         let material2 = SCNMaterial()
-        material2.diffuse.contents = UIImage(named: "dice2")
+        material2.diffuse.contents = UIImage(named: "redDice2")
         
         let material3 = SCNMaterial()
-        material3.diffuse.contents = UIImage(named: "dice3")
+        material3.diffuse.contents = UIImage(named: "redDice3")
         
         let material4 = SCNMaterial()
-        material4.diffuse.contents = UIImage(named: "dice4")
+        material4.diffuse.contents = UIImage(named: "redDice4")
         
         let material5 = SCNMaterial()
-        material5.diffuse.contents = UIImage(named: "dice5")
+        material5.diffuse.contents = UIImage(named: "redDice5")
         
         let material6 = SCNMaterial()
-        material6.diffuse.contents = UIImage(named: "dice6")
+        material6.diffuse.contents = UIImage(named: "redDice6")
         
         diceGeometry.materials = [material1, material2, material6, material5, material3, material4]
         diceNode.geometry = diceGeometry
